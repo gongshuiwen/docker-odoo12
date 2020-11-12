@@ -36,6 +36,7 @@ RUN echo 'deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib' >
         python3-watchdog \
         python3-xlrd \
         python3-xlwt \
+        python3-paramiko \
         xz-utils \
     && echo '7e35a63f9db14f93ec7feeb0fce76b30c08f2057 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
@@ -89,7 +90,7 @@ COPY ./odoo.conf /etc/odoo/
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
-RUN chmod a+x /entrypoint.sh && chmod a+x /usr/local/bin/wait-for-psql.py
+RUN chmod a+x /entrypoint.sh && chmod a+x /usr/local/bin/wait-for-psql.py \
     && chown odoo /etc/odoo/odoo.conf \
     && mkdir -p /mnt/extra-addons \
     && chown -R odoo /mnt/extra-addons
