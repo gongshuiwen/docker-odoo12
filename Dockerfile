@@ -43,7 +43,7 @@ RUN echo 'deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib' >
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
 # install latest postgresql-client
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt stretch-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
     && GNUPGHOME="$(mktemp -d)" \
     && export GNUPGHOME \
     && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
@@ -78,7 +78,8 @@ COPY ./deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb ./odoo.deb
 RUN echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
-    && rm -rf /var/lib/apt/lists/* odoo.deb
+    && rm -rf /var/lib/apt/lists/* odoo.deb \
+    && pip3 install -q celery
 
 # install windows fonts
 COPY ./fonts/* /usr/share/fonts/windows/
@@ -87,6 +88,7 @@ RUN mkfontscale && mkfontdir && fc-cache -fv
 # Copy entrypoint script and Odoo configuration file
 COPY ./entrypoint.sh /
 COPY ./odoo.conf /etc/odoo/
+COPY ./celery_starter.py /
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons

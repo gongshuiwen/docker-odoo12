@@ -34,6 +34,10 @@ case "$1" in
             exec odoo "$@" "${DB_ARGS[@]}"
         fi
         ;;
+    celery )
+        shift
+        exec celery -A celery_starter worker "$@"
+        ;;
     -*)
         wait-for-psql.py ${DB_ARGS[@]} --timeout=30
         exec odoo "$@" "${DB_ARGS[@]}"
