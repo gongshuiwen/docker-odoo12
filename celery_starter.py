@@ -1,9 +1,6 @@
-from odoo.tools import config
+from celery import Celery
 
-config.parse_config(['-c', '/etc/odoo/odoo.conf'])
+import odoo
 
-try:
-    __import__('odoo.addons.hg_base')
-    from odoo import celery
-except ImportError:
-    pass
+odoo.tools.config.parse_config(['-c', '/etc/odoo/odoo.conf'])
+celery = odoo.celery = Celery('odoo', broker=odoo.tools.config.get('celery_broker', 'pyamqp://guest@localhost//'))
