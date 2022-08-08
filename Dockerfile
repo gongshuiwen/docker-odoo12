@@ -25,6 +25,7 @@ RUN echo 'deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib' >
         libssl1.0-dev \
         node-less \
         python3-num2words \
+        python3-paramiko \
         python3-pip \
         python3-phonenumbers \
         python3-pyldap \
@@ -36,21 +37,14 @@ RUN echo 'deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib' >
         python3-watchdog \
         python3-xlrd \
         python3-xlwt \
-        python3-paramiko \
         xz-utils \
     && echo '7e35a63f9db14f93ec7feeb0fce76b30c08f2057 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
-# install latest postgresql-client
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt stretch-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-    && GNUPGHOME="$(mktemp -d)" \
-    && export GNUPGHOME \
-    && repokey='B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8' \
-    && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "${repokey}" \
-    && gpg --batch --armor --export "${repokey}" > /etc/apt/trusted.gpg.d/pgdg.gpg.asc \
-    && gpgconf --kill all \
-    && rm -rf "$GNUPGHOME" \
+# Install latest postgresql-client
+RUN echo "deb http://mirrors.aliyun.com/postgresql/repos/apt/ stretch-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && curl -s http://mirrors.aliyun.com/postgresql/repos/apt/ACCC4CF8.asc | apt-key add - \
     && apt-get update  \
     && apt-get install --no-install-recommends -y postgresql-client \
     && rm -f /etc/apt/sources.list.d/pgdg.list \
@@ -79,7 +73,7 @@ RUN echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
     && rm -rf /var/lib/apt/lists/* odoo.deb \
-    && pip3 install -q celery
+    && pip3 install -q celery -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # install windows fonts
 COPY ./fonts/* /usr/share/fonts/windows/
@@ -99,7 +93,7 @@ RUN chmod a+x /entrypoint.sh && chmod a+x /usr/local/bin/wait-for-psql.py \
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
 # Expose Odoo services
-EXPOSE 8069 8071 8072
+EXPOSE 8069 8072
 
 # Set the default config file
 ENV ODOO_RC /etc/odoo/odoo.conf
