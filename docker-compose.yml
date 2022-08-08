@@ -1,0 +1,59 @@
+version: '3.9'
+services:
+  nginx:
+    image: nginx
+    restart: always
+    depends_on:
+      - web
+      - chat
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  web:
+    build: .
+    restart: always
+    depends_on:
+      - db
+      - mq
+    volumes:
+      - ./addons:/mnt/extra-addons
+      - ./data_odoo:/var/lib/odoo
+      - ./odoo.conf:/etc/odoo/odoo.conf
+  chat:
+    build: .
+    restart: always
+    depends_on:
+      - db
+      - mq
+    volumes:
+      - ./addons:/mnt/extra-addons
+      - ./data_odoo:/var/lib/odoo
+      - ./odoo.conf:/etc/odoo/odoo.conf
+    command: ['--', 'gevent']
+  celery:
+    build: .
+    restart: always
+    depends_on:
+      - db
+      - mq
+    volumes:
+      - ./addons:/mnt/extra-addons
+      - ./data_odoo:/var/lib/odoo
+      - ./odoo.conf:/etc/odoo/odoo.conf
+    command: ['celery', '--loglevel=INFO']
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./data_db:/var/lib/postgresql/data
+  mq:
+    image: rabbitmq:3
+    restart: always
+    volumes:
+      - ./data_mq:/var/lib/rabbitmq
