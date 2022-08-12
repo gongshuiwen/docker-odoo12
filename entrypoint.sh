@@ -36,6 +36,7 @@ case "$1" in
         ;;
     celery )
         shift
+        wait-for-psql.py ${DB_ARGS[@]} --timeout=30
         exec celery -A celery_starter worker "$@"
         ;;
     -*)
