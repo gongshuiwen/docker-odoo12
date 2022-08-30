@@ -30,18 +30,18 @@ case "$1" in
         if [[ "$1" == "scaffold" ]] ; then
             exec odoo_starter.py "$@"
         else
-            wait-for-psql.py ${DB_ARGS[@]} --timeout=30
+            wait-for-psql.py "${DB_ARGS[@]}" --timeout=30
             exec odoo_starter.py "$@" "${DB_ARGS[@]}"
         fi
         ;;
     celery )
         shift
-        wait-for-psql.py ${DB_ARGS[@]} --timeout=30
+        wait-for-psql.py "${DB_ARGS[@]}" --timeout=30
         cd /usr/local/bin
         exec celery -A odoo_starter worker "$@"
         ;;
     -*)
-        wait-for-psql.py ${DB_ARGS[@]} --timeout=30
+        wait-for-psql.py "${DB_ARGS[@]}" --timeout=30
         exec odoo_starter.py "$@" "${DB_ARGS[@]}"
         ;;
     *)
