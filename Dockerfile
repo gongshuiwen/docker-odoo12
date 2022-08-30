@@ -80,8 +80,8 @@ COPY ./fonts/* /usr/share/fonts/windows/
 RUN mkfontscale && mkfontdir && fc-cache -fv
 
 # Copy entrypoint script and Odoo configuration file
-COPY ./entrypoint.sh /
-COPY ./odoo.conf /etc/odoo/
+COPY entrypoint.sh /
+COPY odoo.conf /etc/odoo/
 COPY odoo_starter.py /usr/local/bin/odoo_starter.py
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
