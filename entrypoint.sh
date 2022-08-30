@@ -24,6 +24,26 @@ check_config "db_port" "$PORT"
 check_config "db_user" "$USER"
 check_config "db_password" "$PASSWORD"
 
+: "${RABBIT_HOST:='mq'}"
+: "${RABBIT_PORT:='5672'}"
+: "${RABBIT_USER:='guest'}"
+: "${RABBIT_PASSWORD:='guest'}"
+
+RABBIT_ARGS=()
+function check_config_rabbit() {
+    param="$1"
+    value="$2"
+    if grep -q -E "^\s*\b${param}\b\s*=" "$ODOO_RC" ; then
+        value=$(grep -E "^\s*\b${param}\b\s*=" "$ODOO_RC" |cut -d " " -f3|sed 's/["\n\r]//g')
+    fi;
+    RABBIT_ARGS+=("--${param}")
+    RABBIT_ARGS+=("${value}")
+}
+check_config_rabbit "rabbit_host" "${RABBIT_HOST}"
+check_config_rabbit "rabbit_port" "${RABBIT_PORT}"
+check_config_rabbit "rabbit_user" "${RABBIT_USER}"
+check_config_rabbit "rabbit_password" "${RABBIT_PASSWORD}"
+
 case "$1" in
     -- | odoo)
         shift
@@ -31,17 +51,20 @@ case "$1" in
             exec odoo_starter.py "$@"
         else
             wait-for-psql.py "${DB_ARGS[@]}" --timeout=30
+            wait-for-rabbit.py "${RABBIT_ARGS[@]}" --timeout=30
             exec odoo_starter.py "$@" "${DB_ARGS[@]}"
         fi
         ;;
     celery )
         shift
         wait-for-psql.py "${DB_ARGS[@]}" --timeout=30
+        wait-for-rabbit.py "${RABBIT_ARGS[@]}" --timeout=30
         cd /usr/local/bin
         exec celery -A odoo_starter worker "$@"
         ;;
     -*)
         wait-for-psql.py "${DB_ARGS[@]}" --timeout=30
+        wait-for-rabbit.py "${RABBIT_ARGS[@]}" --timeout=30
         exec odoo_starter.py "$@" "${DB_ARGS[@]}"
         ;;
     *)

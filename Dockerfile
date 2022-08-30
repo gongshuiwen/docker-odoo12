@@ -84,6 +84,7 @@ COPY entrypoint.sh /
 COPY odoo.conf /etc/odoo/
 COPY odoo_starter.py /usr/local/bin/odoo_starter.py
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
+COPY wait-for-rabbit.py /usr/local/bin/wait-for-rabbit.py
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chmod a+x /entrypoint.sh && chmod a+x /usr/local/bin/wait-for-psql.py \
