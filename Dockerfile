@@ -82,7 +82,7 @@ RUN mkfontscale && mkfontdir && fc-cache -fv
 # Copy entrypoint script and Odoo configuration file
 COPY ./entrypoint.sh /
 COPY ./odoo.conf /etc/odoo/
-COPY ./celery_starter.py /
+COPY odoo_starter.py /usr/local/bin/odoo_starter.py
 COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
