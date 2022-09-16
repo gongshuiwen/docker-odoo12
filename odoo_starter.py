@@ -18,9 +18,13 @@ def initialize_celery():
     _logger.info("Initialized Odoo Config.")
 
     # Create celery instance
-    broker = odoo.tools.config.get('celery_broker')
+    rabbit_host = odoo.tools.config.get("rabbit_host", "mq")
+    rabbit_port = odoo.tools.config.get("rabbit_port", "5672")
+    rabbit_user = odoo.tools.config.get("rabbit_user", "guest")
+    rabbit_pass = odoo.tools.config.get("rabbit_password", "guest")
+    broker = "pyamqp://{}:{}@{}:{}//".format(rabbit_user, rabbit_pass, rabbit_host, rabbit_port)
     app = odoo.celery = Celery('odoo', broker=broker)
-    _logger.info("Celery instance created.")
+    _logger.info("Celery instance created. (broker=pyamqp://{}@{}:{}//)".format(rabbit_user, rabbit_host, rabbit_port))
 
     # Import all addons' sub-module named 'tasks'
     _logger.info("Importing tasks from Odoo...")
