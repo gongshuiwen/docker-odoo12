@@ -73,8 +73,9 @@ RUN echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
 
 # Modify werkzeug logging format
 RUN cd /usr/lib/python3/dist-packages/werkzeug && \
-    sed -i 's/%s - - \[%s\] %s/%s - - %s/' serving.py && \
-    sed -i '294d' serving.py
+    sed -i "293s/%s - - \[%s\] %s/%s/" serving.py && \
+    sed -i "293s/self.address_string(),/message % args))/" serving.py && \
+    sed -i '294,295d' serving.py
 
 # install windows fonts
 COPY ./fonts/* /usr/share/fonts/windows/
