@@ -87,10 +87,13 @@ COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 COPY wait-for-rabbit.py /usr/local/bin/wait-for-rabbit.py
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
-RUN chmod a+x /entrypoint.sh && chmod a+x /usr/local/bin/wait-for-psql.py && chmod a+x /usr/local/bin/wait-for-rabbit.py \
-    && chown odoo /etc/odoo/odoo.conf \
-    && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /mnt/extra-addons
+RUN chmod a+x /entrypoint.sh && \
+    chmod a+x /usr/local/bin/odoo_starter.py && \
+    chmod a+x /usr/local/bin/wait-for-psql.py && \
+    chmod a+x /usr/local/bin/wait-for-rabbit.py && \
+    chown odoo /etc/odoo/odoo.conf && \
+    mkdir -p /mnt/extra-addons && \
+    chown -R odoo /mnt/extra-addons
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
 # Expose Odoo services
