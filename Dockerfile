@@ -71,6 +71,11 @@ RUN echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && rm -rf /var/lib/apt/lists/* odoo.deb \
     && pip3 install -q celery -i https://pypi.tuna.tsinghua.edu.cn/simple
 
+# Modify werkzeug logging format
+RUN cd /usr/lib/python3/dist-packages/werkzeug && \
+    sed -i 's/%s - - \[%s\] %s/%s - - %s/' serving.py && \
+    sed -i '294d' serving.py
+
 # install windows fonts
 COPY ./fonts/* /usr/share/fonts/windows/
 RUN mkfontscale && mkfontdir && fc-cache -fv
