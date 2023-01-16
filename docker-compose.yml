@@ -12,7 +12,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
   web:
-    build: .
+    image: odoo12
     restart: always
     environment:
       - TZ=Asia/Shanghai
@@ -24,7 +24,7 @@ services:
       - ./data_odoo:/var/lib/odoo
       - ./odoo.conf:/etc/odoo/odoo.conf
   celery:
-    build: .
+    image: odoo12
     restart: always
     environment:
       - TZ=Asia/Shanghai
@@ -48,7 +48,7 @@ services:
       - ./data_db:/var/lib/postgresql/data
     command: ['-c', 'log_timezone=Asia/Shanghai']
   mq:
-    image: rabbitmq:3
+    image: rabbitmq:3-management
     restart: always
     environment:
       - TZ=Asia/Shanghai
