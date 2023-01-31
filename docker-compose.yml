@@ -36,12 +36,26 @@ services:
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=odoo
-      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_PASSWORD_FILE=/run/secrets/passwd_pg
       - PGDATA=/var/lib/postgresql/data/pgdata
+    secrets:
+      - passwd_pg
     volumes:
       - ./data_db:/var/lib/postgresql/data
+    command: ['-c', 'log_timezone=Asia/Shanghai']
   mq:
     image: rabbitmq:3-management
     restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS_FILE=/run/secrets/passwd_rabbitmq
+    secrets:
+      - passwd_rabbitmq
     volumes:
       - ./data_mq:/var/lib/rabbitmq
+
+secrets:
+  passwd_pg:
+    file: ./secrets/passwd_pg
+  passwd_rabbitmq:
+    file: ./secrets/passwd_rabbitmq
