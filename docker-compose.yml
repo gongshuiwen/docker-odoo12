@@ -3,8 +3,6 @@ services:
   nginx:
     image: nginx
     restart: always
-    environment:
-      - TZ=Asia/Shanghai
     depends_on:
       - web
     ports:
@@ -14,8 +12,6 @@ services:
   web:
     image: odoo12
     restart: always
-    environment:
-      - TZ=Asia/Shanghai
     depends_on:
       - db
       - mq
@@ -26,8 +22,6 @@ services:
   celery:
     image: odoo12
     restart: always
-    environment:
-      - TZ=Asia/Shanghai
     depends_on:
       - db
       - mq
@@ -46,11 +40,8 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - ./data_db:/var/lib/postgresql/data
-    command: ['-c', 'log_timezone=Asia/Shanghai']
   mq:
     image: rabbitmq:3-management
     restart: always
-    environment:
-      - TZ=Asia/Shanghai
     volumes:
       - ./data_mq:/var/lib/rabbitmq
