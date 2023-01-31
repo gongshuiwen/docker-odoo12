@@ -13,6 +13,7 @@ RUN echo 'deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib' >
     && echo 'deb http://mirrors.aliyun.com/debian-security stretch/updates main' >> /etc/apt/sources.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
+        apt-transport-https \
         ca-certificates \
         curl \
         dirmngr \
@@ -39,15 +40,15 @@ RUN echo 'deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib' >
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
 # Install latest postgresql-client
-RUN echo "deb http://mirrors.aliyun.com/postgresql/repos/apt/ stretch-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-    && curl -s http://mirrors.aliyun.com/postgresql/repos/apt/ACCC4CF8.asc | apt-key add - \
+RUN echo "deb https://apt-archive.postgresql.org/pub/repos/apt stretch-pgdg-archive main" > /etc/apt/sources.list.d/pgdg.list  \
+    && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null  \
     && apt-get update  \
     && apt-get install --no-install-recommends -y postgresql-client \
     && rm -f /etc/apt/sources.list.d/pgdg.list \
     && rm -rf /var/lib/apt/lists/*
 
 # Install rtlcss (on Debian stretch)
-RUN echo "deb http://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list \
+RUN echo "deb https://deb.nodesource.com/node_12.x stretch main" > /etc/apt/sources.list.d/nodesource.list \
     && GNUPGHOME="$(mktemp -d)" \
     && export GNUPGHOME \
     && repokey='9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280' \
@@ -68,18 +69,11 @@ COPY ./deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb ./odoo.deb
 RUN echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
-    && rm -rf /var/lib/apt/lists/* odoo.deb \
-    && pip3 install -q celery -i https://pypi.tuna.tsinghua.edu.cn/simple
+    && rm -rf /var/lib/apt/lists/* odoo.deb
 
-# Modify werkzeug logging format
-RUN cd /usr/lib/python3/dist-packages/werkzeug && \
-    sed -i "293s/%s - - \[%s\] %s/%s/" serving.py && \
-    sed -i "293s/self.address_string(),/message % args))/" serving.py && \
-    sed -i '294,295d' serving.py
-
-# install windows fonts
-COPY ./fonts/* /usr/share/fonts/windows/
-RUN mkfontscale && mkfontdir && fc-cache -fv
+# Install project python package
+COPY requirements.txt /
+RUN pip3 install -q -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Copy entrypoint script and Odoo configuration file
 COPY entrypoint.sh /
