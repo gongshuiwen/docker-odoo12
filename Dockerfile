@@ -80,8 +80,8 @@ COPY requirements.txt /
 RUN pip3 install -q -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Copy entrypoint script and Odoo configuration file
-COPY entrypoint.sh /
-COPY odoo.conf /etc/odoo/
+COPY docker-entrypoint.sh /
+COPY odoo.sample.conf /etc/odoo/odoo.conf
 COPY *.py /usr/local/bin/
 
 # Create /mnt/extra-addons and set permissions
@@ -103,5 +103,5 @@ ENV ODOO_RC /etc/odoo/odoo.conf
 # Set default user when running the container
 USER odoo
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["odoo"]
