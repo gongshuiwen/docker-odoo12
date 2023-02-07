@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM python:3.7-slim-bullseye
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
@@ -6,90 +6,68 @@ SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 ENV LANG C.UTF-8
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
-COPY ./deb/wkhtmltox_0.12.5-1.stretch_amd64.deb ./wkhtmltox.deb
-RUN echo 'deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib' > /etc/apt/sources.list && \
-    echo 'deb http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.aliyun.com/debian-security stretch/updates main' >> /etc/apt/sources.list && \
-    apt-get update &&\
+COPY deb/wkhtmltox_0.12.6.1-2.bullseye_amd64.deb /wkhtmltox.deb
+RUN echo 'deb http://mirrors.aliyun.com/debian/ bullseye main non-free contrib' > /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian-security bullseye-security main' >> /etc/apt/sources.list && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
-        apt-transport-https \
+        build-essential \
         ca-certificates \
         curl \
         dirmngr \
         fonts-noto-cjk \
         gnupg \
-        libssl1.0-dev \
+        libldap2-dev \
+        libsasl2-dev \
+        libssl-dev \
         node-less \
-        python3-num2words \
-        python3-paramiko \
-        python3-pip \
-        python3-phonenumbers \
-        python3-pyldap \
-        python3-qrcode \
-        python3-renderpm \
-        python3-setuptools \
-        python3-slugify \
-        python3-vobject \
-        python3-watchdog \
-        python3-xlrd \
-        python3-xlwt \
+        unzip \
+        xfonts-utils \
         xz-utils && \
-    echo '7e35a63f9db14f93ec7feeb0fce76b30c08f2057 wkhtmltox.deb' | sha1sum -c - && \
+    echo 'CECBF5A6ABBD68D324A7CD6C51EC843D71E98951 wkhtmltox.deb' | sha1sum -c - && \
     apt-get install -y --no-install-recommends ./wkhtmltox.deb && \
     rm -rf /var/lib/apt/lists/* wkhtmltox.deb
 
 # Install latest postgresql-client
-RUN echo "deb https://apt-archive.postgresql.org/pub/repos/apt stretch-pgdg-archive main" > /etc/apt/sources.list.d/pgdg.list && \
+RUN echo "deb http://mirrors.aliyun.com/postgresql/repos/apt/ bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
     curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null && \
     apt-get update && \
-    apt-get install --no-install-recommends -y postgresql-client-13 && \
-    rm -f /etc/apt/sources.list.d/pgdg.list && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install rtlcss
-RUN echo "deb https://deb.nodesource.com/node_12.x stretch main" > /etc/apt/sources.list.d/nodesource.list && \
-    GNUPGHOME="$(mktemp -d)" && \
-    export GNUPGHOME && \
-    repokey='9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280' && \
-    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "${repokey}" && \
-    gpg --batch --armor --export "${repokey}" > /etc/apt/trusted.gpg.d/nodejs.gpg.asc && \
-    gpgconf --kill all && \
-    rm -rf "$GNUPGHOME" && \
-    apt-get update && \
-    apt-get install --no-install-recommends -y nodejs && \
-    npm install -g rtlcss && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install --no-install-recommends -y postgresql-client libpq-dev && \
+    rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/pgdg.list
 
 # Install windows fonts
 COPY ./fonts/* /usr/share/fonts/windows/
 RUN mkfontscale && mkfontdir && fc-cache -fv
 
-# Install Odoo
+# Install Odoo 12.0 by zip file downloaded from GitHub
 ENV ODOO_VERSION 12.0
-ARG ODOO_RELEASE=20201026
-ARG ODOO_SHA=848d079fdfa76f57bd742c3385096d6743c9532e
-COPY ./deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb ./odoo.deb
-RUN echo "${ODOO_SHA} odoo.deb" | sha1sum -c - && \
-    apt-get update && \
-    apt-get -y install --no-install-recommends ./odoo.deb && \
-    rm -rf /var/lib/apt/lists/* odoo.deb
+ENV ODOO_RELEASE=20221013
+COPY odoo_${ODOO_VERSION}_${ODOO_RELEASE}.zip /odoo.zip
+RUN echo "B417C889E380FC4247D782F3AC67535798689A06 odoo.zip" | sha1sum -c - && \
+    unzip -q odoo.zip && \
+    mv /odoo-12.0/odoo /usr/local/lib/python3.7/site-packages/ && \
+    mv /odoo-12.0/addons/* /usr/local/lib/python3.7/site-packages/odoo/addons/ && \
+    echo 'celery==4.4.7' >> /odoo-12.0/requirements.txt && \
+    echo 'importlib-metadata==4.13.0' >> /odoo-12.0/requirements.txt && \
+    pip3 install --no-cache-dir -r /odoo-12.0/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple && \
+    rm -rf /odoo.zip /odoo-12.0
 
-# Install project python package
+# Install project requirements
 COPY requirements.txt /
-RUN pip3 install -q -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUN pip3 install --no-cache-dir -r /requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Copy entrypoint script and Odoo configuration file
-COPY docker-entrypoint.sh /
 COPY odoo.sample.conf /etc/odoo/odoo.conf
+COPY docker-entrypoint.sh /
 COPY *.py /usr/local/bin/
 
-# Create /mnt/extra-addons and set permissions
-RUN mkdir -p /mnt/extra-addons && \
-    chown -R odoo /mnt/extra-addons && \
-    chown odoo /etc/odoo/odoo.conf && \
-    chmod a+x /entrypoint.sh && \
-    chmod a+x /usr/local/bin/*.py
+# Create user and gourp, create /mnt/extra-addons, set permissions
+RUN adduser --system --home "/var/lib/odoo" --quiet --group "odoo" && \
+    mkdir -p /mnt/extra-addons && \
+    chown odoo /mnt/extra-addons /var/lib/odoo /etc/odoo/odoo.conf && \
+    chmod a+x /docker-entrypoint.sh /usr/local/bin/*.py
 
 # Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
