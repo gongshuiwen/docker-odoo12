@@ -42,7 +42,6 @@ services:
       - passwd_pg
     volumes:
       - ./data_db:/var/lib/postgresql/data
-    command: ['-c', 'log_timezone=Asia/Shanghai']
   mq:
     image: rabbitmq:3-management
     restart: always
