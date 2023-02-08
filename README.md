@@ -30,5 +30,7 @@ rabbit_host, rabbit_port, rabbit_user 和 rabbit_password, 缺省情况下将使
 
 ## 使用 docker compose 运行全部服务
 ```sh
+cp odoo.sample.conf odoo.conf
+cp nginx.sample.conf nginx.conf
 docker compose up -d
 ```

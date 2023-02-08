@@ -3,3 +3,4 @@ data_db
 data_mq
 data_odoo
 odoo.conf
+nginx.conf
