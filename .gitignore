@@ -1,6 +1,4 @@
 secrets
-data_db
-data_mq
-data_odoo
+data*
 odoo.conf
 nginx.conf
