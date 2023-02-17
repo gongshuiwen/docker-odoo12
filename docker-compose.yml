@@ -15,6 +15,7 @@ services:
     depends_on:
       - db
       - mq
+      - redis
     volumes:
       - ./addons:/mnt/extra-addons
       - ./data_odoo:/var/lib/odoo
@@ -25,6 +26,7 @@ services:
     depends_on:
       - db
       - mq
+      - redis
     volumes:
       - ./addons:/mnt/extra-addons
       - ./data_odoo:/var/lib/odoo
@@ -52,6 +54,11 @@ services:
       - passwd_rabbitmq
     volumes:
       - ./data_mq:/var/lib/rabbitmq
+  redis:
+    image: redis
+    restart: always
+    volumes:
+      - ./data_redis:/data
 
 secrets:
   passwd_pg:
