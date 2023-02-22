@@ -45,7 +45,7 @@ services:
     volumes:
       - ./data_db:/var/lib/postgresql/data
   mq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3.8-management
     restart: always
     environment:
       - RABBITMQ_DEFAULT_USER=guest
