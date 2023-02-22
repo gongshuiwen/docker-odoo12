@@ -71,7 +71,7 @@ RUN adduser --system --home "/var/lib/odoo" --quiet --group "odoo" && \
     chmod a+x /docker-entrypoint.sh /usr/local/bin/*.py
 
 # Modify werkzeug logging format
-RUN cd /usr/local/lib/python3.7/dist-packages/werkzeug && \
+RUN cd /usr/local/lib/python3.7/site-packages/werkzeug && \
     sed -i "293s/%s - - \[%s\] %s/%s/" serving.py && \
     sed -i "293s/self.address_string(),/message % args))/" serving.py && \
     sed -i '294,295d' serving.py
