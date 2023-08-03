@@ -1,12 +1,12 @@
 # README
-此仓库为自定义的Odoo12镜像构建文件，是对官方的Odoo12镜像构建文件做出了一些的修改，相关的修改内容如下：
+此仓库为自定义的Odoo12镜像构建文件，对官方的Odoo12镜像构建文件做出了一些的修改，相关的修改内容如下：
 
 - 将 debian 软件源切换为阿里镜像源
-- 改为从本地安装 odoo12 和 wkhtmltox 的 deb 包
+- 改为从本地安装 odoo12 和 wkhtmltox
 - 添加 Windows 系统中的宋体和 TimesNewRoman 字体
-- 安装 celery 并支持直接运行 celery worker
-- 添加等待 RabbitMQ Server 的启动脚本
-- 安装项目模块或三方模块相关的 python3 依赖库，例如 paramiko, dingtalk-sdk等
+- 镜像中默认安装 celery redis minio 模块，并支持作为 celery worker 运行
+- 需要安装的额外项目相关模块可于 requirements.txt 添加，例如 paramiko, dingtalk-sdk等
+- 添加等待 RabbitMQ Server 和 Redis Server 的启动脚本
 
 ## 镜像构建
 ```sh

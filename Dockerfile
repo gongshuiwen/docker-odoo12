@@ -50,6 +50,7 @@ RUN echo "B417C889E380FC4247D782F3AC67535798689A06 odoo.zip" | sha1sum -c - && \
     mv /odoo-12.0/odoo /usr/local/lib/python3.7/site-packages/ && \
     mv /odoo-12.0/addons/* /usr/local/lib/python3.7/site-packages/odoo/addons/ && \
     echo 'redis==4.5.1' >> /odoo-12.0/requirements.txt && \
+    echo 'minio==7.1.15' >> /odoo-12.0/requirements.txt && \
     echo 'celery==4.4.7' >> /odoo-12.0/requirements.txt && \
     echo 'importlib-metadata==4.13.0' >> /odoo-12.0/requirements.txt && \
     pip3 install --no-cache-dir -r /odoo-12.0/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple && \
