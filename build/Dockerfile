@@ -77,14 +77,17 @@ RUN cd /usr/local/lib/python3.7/site-packages/werkzeug && \
     sed -i "293s/self.address_string(),/message % args))/" serving.py && \
     sed -i '294,295d' serving.py
 
-# Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
-VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
+# Mount /var/lib/odoo to allow restoring filestore
+VOLUME ["/var/lib/odoo"]
 
 # Expose Odoo services
 EXPOSE 8069 8072
 
 # Set the default config file
 ENV ODOO_RC /etc/odoo/odoo.conf
+
+# Copy addons to /mnt/extra-addons
+COPY addons/* /mnt/extra-addons/
 
 # Set default user when running the container
 USER odoo
