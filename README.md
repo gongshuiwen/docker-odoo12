@@ -13,44 +13,56 @@
 
 ### 镜像构建
 ```sh
-docker build -t odoo12 ./build
+docker build -t odoo12:latest ./build
 ```
 
 ### 运行 celery worker
 使用如下命令行参数将镜像容器作为 celery worker 运行，不用添加 `-A app worker`，其余参数可直接追加在后面：
 ```sh
-docker run \
--v /host/path/addons/:/mnt/extra-addons/ \
+docker run -d \
 -v /host/path/data/:/var/lib/odoo/ \
 -v /host/path/odoo.conf:/etc/odoo/odoo.conf \
--d odoo12 celery -l INFO [celery args]
+odoo12 celery -l INFO [celery args]
 ```
 > 注意：作为 celery worker 运行容器时，命令行中只能添加 celery worker 相关的命令行参数，
 odoo 参数只能填写在 `odoo.conf` 配置文件中，且必须挂载至 `/etc/odoo/` 目录下。
 
-Odoo Web 和 Celery 容器启动时会等待 RabbitMQ Server 启动成功, RabbitMQ 连接信息需按如下方式在 `odoo.conf` 文件中配置：
+### 启动等待
+Odoo12 镜像运行的容器启动时会等待 RabbitMQ Server 和 Redis Server启动成功, RabbitMQ 和 Redis 连接信息需按如下方式在 `odoo.conf` 文件中配置：
 ```conf
-; Celery
+; Celery broker
 rabbit_host = mq
 rabbit_port = 5672
 rabbit_user = guest
 rabbit_password = guest
+
+; Redis
+redis_host = redis
+redis_port = 6379
+redis_password = redis
+redis_db = 0
+redis_maxconn = 32
 ```
+
 > 注意：缺省情况下将使用默认配置，连接超时后容器会自动退出
 
 ## Docker Compose
-仓库中还添加了 compose 模板和 nginx 配置模板，启动如下方式：
+
+Compose 启动如下方式：
 ```sh
+cp build/odoo.sample.conf compose/odoo.conf
 cd ./compose
 docker compose up -d
 ```
 
-docker compose 中的默认服务如下：
+docker compose 中的默认服务及镜像如下：
 - nginx
-- odoo
-- celery
-- postgresql
-- rabbitmq
+- web(odoo12)
+- chat(odoo12)
+- cron(odoo12)
+- celery(odoo12)
+- db(postgres:13)
+- mq(rabbitmq:3-management)
 - redis
 - minio
 
