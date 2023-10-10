@@ -17,6 +17,7 @@ if __name__ == '__main__':
     while (time.time() - start_time) < args.timeout:
         try:
             r = redis.Redis(host=args.redis_host, port=args.redis_port, password=args.redis_password)
+            r.ping()
         except Exception as e:
             error = e
         else:
