@@ -82,9 +82,6 @@ EXPOSE 8069 8072
 # Set the default config file
 ENV ODOO_RC /etc/odoo/odoo.conf
 
-# Copy addons to /mnt/extra-addons
-COPY addons* /mnt/extra-addons/
-
 # Set default user when running the container
 USER odoo
 
