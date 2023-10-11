@@ -52,26 +52,26 @@ RUN echo "B417C889E380FC4247D782F3AC67535798689A06 odoo.zip" | sha1sum -c - && \
     pip3 install --no-cache-dir -r /odoo-12.0/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple && \
     rm -rf /odoo.zip /odoo-12.0
 
-# Create user and gourp, create /mnt/extra-addons, set permissions
-RUN adduser --system --home "/var/lib/odoo" --quiet --group "odoo" && \
-    mkdir -p /mnt/extra-addons && \
-    chown odoo /mnt/extra-addons /var/lib/odoo /etc/odoo/odoo.conf && \
-    chmod a+x /docker-entrypoint.sh /usr/local/bin/*.py
-
 # Modify werkzeug logging format
 RUN cd /usr/local/lib/python3.7/site-packages/werkzeug && \
     sed -i "293s/%s - - \[%s\] %s/%s/" serving.py && \
     sed -i "293s/self.address_string(),/message % args))/" serving.py && \
     sed -i '294,295d' serving.py
 
-# Install project requirements
-COPY requirements.txt /
-RUN pip3 install --no-cache-dir -r /requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
-
 # Copy entrypoint script and Odoo configuration file
 COPY odoo.sample.conf /etc/odoo/odoo.conf
 COPY docker-entrypoint.sh /
 COPY *.py /usr/local/bin/
+
+# Create user and gourp, create /mnt/extra-addons, set permissions
+RUN adduser --system --home "/var/lib/odoo" --quiet --group "odoo" && \
+    mkdir -p /mnt/extra-addons && \
+    chown odoo /mnt/extra-addons /var/lib/odoo /etc/odoo/odoo.conf && \
+    chmod a+x /docker-entrypoint.sh /usr/local/bin/*.py
+
+# Install addiontal requirements
+COPY requirements.txt /
+RUN pip3 install --no-cache-dir -r /requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Mount /var/lib/odoo to allow restoring filestore
 VOLUME ["/var/lib/odoo"]
