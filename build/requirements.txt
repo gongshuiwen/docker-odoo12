@@ -1,4 +1,4 @@
 celery==4.4.7
 redis==4.5.1
 minio==7.1.15
-pendulum==2.1.2
+importlib-metadata==4.13.0
