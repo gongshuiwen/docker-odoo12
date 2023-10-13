@@ -4,10 +4,10 @@ set -e
 
 # set the postgres database host, port, user and password according to the environment
 # and pass them as arguments to the odoo process if not present in the config file
-: ${HOST:=${DB_PORT_5432_TCP_ADDR:='db'}}
-: ${PORT:=${DB_PORT_5432_TCP_PORT:=5432}}
-: ${USER:=${DB_ENV_POSTGRES_USER:=${POSTGRES_USER:='odoo'}}}
-: ${PASSWORD:=${DB_ENV_POSTGRES_PASSWORD:=${POSTGRES_PASSWORD:='odoo'}}}
+: "${HOST:=${DB_PORT_5432_TCP_ADDR:='db'}}"
+: "${PORT:=${DB_PORT_5432_TCP_PORT:=5432}}"
+: "${USER:=${DB_ENV_POSTGRES_USER:=${POSTGRES_USER:='odoo'}}}"
+: "${PASSWORD:=${DB_ENV_POSTGRES_PASSWORD:=${POSTGRES_PASSWORD:='odoo'}}}"
 
 DB_ARGS=()
 function check_config() {
@@ -44,9 +44,9 @@ check_config_rabbit "rabbit_port" "${RABBIT_PORT}"
 check_config_rabbit "rabbit_user" "${RABBIT_USER}"
 check_config_rabbit "rabbit_password" "${RABBIT_PASSWORD}"
 
-: "${REDIS_HOST:='mq'}"
-: "${REDIS_PORT:='5672'}"
-: "${REDIS_PASSWORD:=''}"
+: "${REDIS_HOST:='redis'}"
+: "${REDIS_PORT:='6379'}"
+: "${REDIS_PASSWORD:='redis'}"
 
 REDIS_ARGS=()
 function check_config_redis() {
