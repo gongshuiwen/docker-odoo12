@@ -11,7 +11,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
   web:
-    image: odoo12
+    image: ${IMAGE_NAME:-odoo12}:${IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - db
@@ -23,7 +23,7 @@ services:
       - ./odoo.conf:/etc/odoo/odoo.conf
     command: ['--max-cron-threads=0']
   chat:
-    image: odoo12
+    image: ${IMAGE_NAME:-odoo12}:${IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - db
@@ -35,7 +35,7 @@ services:
       - ./odoo.conf:/etc/odoo/odoo.conf
     command: ['--', 'gevent']
   cron:
-    image: odoo12
+    image: ${IMAGE_NAME:-odoo12}:${IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - db
@@ -47,7 +47,7 @@ services:
       - ./odoo.conf:/etc/odoo/odoo.conf
     command: ['--no-http']
   celery:
-    image: odoo12
+    image: ${IMAGE_NAME:-odoo12}:${IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - db
@@ -62,9 +62,9 @@ services:
     image: postgres:13
     restart: always
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=odoo
-      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      - POSTGRES_USER=${POSTGRES_USER:-odoo}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-odoo}
       - PGDATA=/var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
@@ -75,27 +75,26 @@ services:
     restart: always
     hostname: rabbitmq
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-guest}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-guest}
     ports:
       - "15671:15671"
     volumes:
       - ./data_mq:/var/lib/rabbitmq
   redis:
-    image: redis
+    image: redis:7
     restart: always
     ports:
       - "6379:6379"
     volumes:
       - ./data_redis:/data
-    command: ['--requirepass', 'redis']
+    command: ['--requirepass', '${REDIS_PASSWORD:-redis}']
   minio:
     image: minio/minio
     restart: always
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
-      - MINIO_DEFAULT_BUCKETS='odoo-files'
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
     ports:
       - "9000:9000"
       - "9001:9001"
