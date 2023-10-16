@@ -15,8 +15,8 @@ services:
     restart: always
     depends_on:
       - db
-      - redis
       - mq
+      - redis
       - minio
     volumes:
       - ./data_odoo:/var/lib/odoo
@@ -27,8 +27,8 @@ services:
     restart: always
     depends_on:
       - db
-      - redis
       - mq
+      - redis
       - minio
     volumes:
       - ./data_odoo:/var/lib/odoo
@@ -51,8 +51,8 @@ services:
     restart: always
     depends_on:
       - db
-      - redis
       - mq
+      - redis
       - minio
     volumes:
       - ./data_odoo:/var/lib/odoo

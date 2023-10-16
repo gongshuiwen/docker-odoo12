@@ -44,13 +44,14 @@ redis_db = 0
 redis_maxconn = 32
 ```
 
-> 注意：缺省情况下将使用默认配置，连接超时后容器会自动退出
+> 配置项缺省情况下将使用默认配置，连接超时后容器会自动退出
 
 ## Docker Compose
+> 该 docker-compose.yml 仅为生产环境部署示例，使用时一定要修改密码相关配置！！！
 
-Compose 启动如下方式：
+### Compose 启动
 ```sh
-cp build/odoo.sample.conf compose/odoo.conf
+cp build/odoo.conf compose/odoo.conf
 cd ./compose
 docker compose up -d
 ```
