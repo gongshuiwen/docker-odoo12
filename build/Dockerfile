@@ -47,16 +47,14 @@ RUN echo "B417C889E380FC4247D782F3AC67535798689A06 odoo.zip" | sha1sum -c - && \
     unzip -q odoo.zip && \
     mv /odoo-12.0/odoo /usr/local/lib/python3.7/site-packages/ && \
     mv /odoo-12.0/addons/* /usr/local/lib/python3.7/site-packages/odoo/addons/ && \
-    mv /odoo-12.0/requirements.txt /requirements.txt && \
     apt-get remove -y unzip && apt-get -y autoremove && \
     rm -rf /odoo.zip /odoo-12.0
 
 # Install python requirements
-COPY requirements.txt /requirements-additional.txt
+COPY requirements.txt /requirements.txt
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential && \
     pip3 install --no-cache-dir\
       -r /requirements.txt \
-      -r /requirements-additional.txt \
       -i https://pypi.tuna.tsinghua.edu.cn/simple && \
     apt-get remove -y build-essential && apt-get -y autoremove
 
