@@ -75,6 +75,10 @@ RUN mkdir -p /mnt/extra-addons && \
     chown odoo /var/lib/odoo /etc/odoo/odoo.conf /mnt/extra-addons /docker-entrypoint.sh /usr/local/bin/*.py && \
     chmod u+x /docker-entrypoint.sh /usr/local/bin/*.py
 
+# Odoo server HTTP/1.1 Patch
+RUN sed -i "128i\        self.protocol_version = \"HTTP/1.1\"" \
+    /usr/local/lib/python3.7/site-packages/odoo/service/server.py
+
 # Mount /var/lib/odoo to allow restoring filestore
 VOLUME ["/var/lib/odoo"]
 
