@@ -18,6 +18,8 @@ services:
       - mq
       - redis
       - minio
+#    ports:
+#      - "8069:8069"
     volumes:
       - ${BASE_DIR-.}/data_odoo:/var/lib/odoo
       - ${BASE_DIR-.}/odoo.conf:/etc/odoo/odoo.conf
@@ -30,6 +32,8 @@ services:
       - mq
       - redis
       - minio
+#    ports:
+#      - "8072:8072"
     volumes:
       - ${BASE_DIR-.}/data_odoo:/var/lib/odoo
       - ${BASE_DIR-.}/odoo.conf:/etc/odoo/odoo.conf
@@ -66,8 +70,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-odoo}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-odoo}
       - PGDATA=/var/lib/postgresql/data/pgdata
-    ports:
-      - "5432:5432"
+#    ports:
+#      - "5432:5432"
     volumes:
       - ${BASE_DIR-.}/data_db:/var/lib/postgresql/data
   mq:
@@ -77,15 +81,15 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-guest}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-guest}
-    ports:
-      - "15671:15671"
+#    ports:
+#      - "15671:15671"
     volumes:
       - ${BASE_DIR-.}/data_mq:/var/lib/rabbitmq
   redis:
     image: redis:7
     restart: always
-    ports:
-      - "6379:6379"
+#    ports:
+#      - "6379:6379"
     volumes:
       - ${BASE_DIR-.}/data_redis:/data
     command: ['--requirepass', '${REDIS_PASSWORD:-redis}']
@@ -95,9 +99,9 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
-    ports:
-      - "9000:9000"
-      - "9001:9001"
+#    ports:
+#      - "9000:9000"
+#      - "9001:9001"
     volumes:
       - ${BASE_DIR-.}/data_minio:/data
     command: ['server', '/data', '--console-address', ':9001']
