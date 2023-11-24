@@ -10,7 +10,7 @@ greenlet==0.4.10 ; python_version < '3.7'
 greenlet==0.4.14 ; python_version >= '3.7'
 html2text==2016.9.19
 Jinja2==2.10.1
-libsass==0.12.3
+libsass==0.22.0
 lxml==3.7.1 ; sys_platform != 'win32' and python_version < '3.7'
 lxml==4.2.3 ; sys_platform != 'win32' and python_version >= '3.7'
 lxml ; sys_platform == 'win32'
@@ -21,7 +21,7 @@ num2words==0.5.6
 ofxparse==0.16
 passlib==1.6.5
 Pillow==4.0.0 ; python_version < '3.7'
-Pillow==6.1.0 ; python_version >= '3.7'
+Pillow==9.0.0 ; python_version >= '3.7'
 psutil==4.3.1; sys_platform != 'win32'
 psutil==5.6.3; sys_platform == 'win32'
 psycopg2==2.7.3.1; sys_platform != 'win32' and python_version < '3.8'
@@ -31,11 +31,11 @@ pyldap==2.4.28; sys_platform != 'win32'
 pyparsing==2.1.10
 PyPDF2==1.26.0
 pyserial==3.1.1
-python-dateutil==2.5.3
-pytz==2016.7
+python-dateutil==2.6
+pytz==2022.7.1
 pyusb==1.0.0
 qrcode==5.3
-reportlab==3.3.0
+reportlab==4.0.4
 requests==2.20.0
 suds-jurko==0.6
 vatnumber==1.2
@@ -48,7 +48,7 @@ xlrd==1.0.0
 pypiwin32 ; sys_platform == 'win32'
 
 # Additional requirements
-celery==4.4.7
-redis==4.5.1
-minio==7.1.15
+celery==5.2.7
+redis==5.0.0
+minio==7.1.16
 importlib-metadata==4.13.0
