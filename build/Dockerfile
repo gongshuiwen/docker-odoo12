@@ -6,10 +6,10 @@ SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 ENV LANG C.UTF-8
 
 # Set deb mirrors
-RUN echo 'deb http://mirrors.aliyun.com/debian/ bullseye main non-free contrib' > /etc/apt/sources.list && \
-    echo 'deb http://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib' >> /etc/apt/sources.list && \
-    echo 'deb http://mirrors.aliyun.com/debian-security bullseye-security main' >> /etc/apt/sources.list
+RUN echo 'deb https://mirrors.aliyun.com/debian/ bullseye main non-free contrib' > /etc/apt/sources.list && \
+    echo 'deb https://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib' >> /etc/apt/sources.list && \
+    echo 'deb https://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib' >> /etc/apt/sources.list && \
+    echo 'deb https://mirrors.aliyun.com/debian-security bullseye-security main' >> /etc/apt/sources.list
 
 # Install essential packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -33,22 +33,10 @@ RUN apt-get update && apt-get install -y xfonts-utils fonts-noto-cjk && \
 
 # Install latest postgresql-client
 RUN apt-get update && apt-get install -y --no-install-recommends curl gnupg dirmngr && \
-    echo "deb http://mirrors.aliyun.com/postgresql/repos/apt/ bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    echo "deb https://mirrors.aliyun.com/postgresql/repos/apt/ bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
     curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null && \
     apt-get update && apt-get install -y --no-install-recommends postgresql-client libpq-dev && \
     rm /etc/apt/sources.list.d/pgdg.list
-
-# Copy Odoo 12.0 zip file downloaded from GitHub
-ENV ODOO_VERSION 12.0
-ENV ODOO_RELEASE=20221013
-COPY odoo_${ODOO_VERSION}_${ODOO_RELEASE}.zip /odoo.zip
-RUN echo "B417C889E380FC4247D782F3AC67535798689A06 odoo.zip" | sha1sum -c - && \
-    apt-get update && apt-get install -y --no-install-recommends unzip && \
-    unzip -q odoo.zip && \
-    mv /odoo-12.0/odoo /usr/local/lib/python3.7/site-packages/ && \
-    mv /odoo-12.0/addons/* /usr/local/lib/python3.7/site-packages/odoo/addons/ && \
-    apt-get remove -y unzip && apt-get -y autoremove && \
-    rm -rf /odoo.zip /odoo-12.0
 
 # Install python requirements
 COPY requirements.txt /requirements.txt
@@ -57,6 +45,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
       -r /requirements.txt \
       -i https://pypi.tuna.tsinghua.edu.cn/simple && \
     apt-get remove -y build-essential && apt-get -y autoremove
+
+# Copy Odoo 12.0 files downloaded from GitHub
+ENV ODOO_RELEASE=20231016
+COPY odoo12-${ODOO_RELEASE}/odoo /usr/local/lib/python3.7/site-packages/odoo/
+COPY odoo12-${ODOO_RELEASE}/addons /usr/local/lib/python3.7/site-packages/odoo/addons/
 
 # Modify werkzeug logging format
 RUN cd /usr/local/lib/python3.7/site-packages/werkzeug && \
