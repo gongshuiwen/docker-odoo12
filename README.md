@@ -30,8 +30,8 @@ odoo 参数只能填写在 `odoo.conf` 配置文件中，且必须挂载至 `/et
 ### 启动等待
 Odoo12 镜像运行的容器启动时会等待 RabbitMQ Server 和 Redis Server启动成功, RabbitMQ 和 Redis 连接信息需按如下方式在 `odoo.conf` 文件中配置：
 ```conf
-; Celery broker
-rabbit_host = mq
+; RabbitMQ
+rabbit_host = rabbitmq
 rabbit_port = 5672
 rabbit_user = guest
 rabbit_password = guest
@@ -57,20 +57,38 @@ docker compose up -d
 ```
 
 docker compose 中的默认服务及镜像如下：
-- nginx
+- nginx(nginx)
 - web(odoo12)
 - chat(odoo12)
 - cron(odoo12)
 - celery(odoo12)
 - db(postgres:13)
-- mq(rabbitmq:3-management)
-- redis
-- minio
+- rabbitmq(rabbitmq:3-management)
+- redis(redis)
+- minio(minio/minio)
+
+## 构建项目镜像
+本镜像是供项目使用的基础环境，如果需要从该镜像构建项目镜像，可参考如下构建文件:
+```dockerfile
+FROM odoo12:latest
+
+# Install project requirements
+USER root
+COPY requirements.txt /requirements-project.txt
+RUN pip3 install --no-cache-dir -r /requirements-project.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+USER odoo
+
+# Add project's addons
+COPY addons_project /mnt/extra-addons/
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["odoo"]
+```
 
 ## TODO
-本镜像是供项目使用的，该镜像只是为项目提供基础环境，后续可以考虑将如下已实现的功能加入到该镜像中：
-
-- Redis Session 功能
-- 使用 Redis 作为 ormcache 缓存实现
-- 使用 Minio 对象存储替代附件的本地存储
-- Celery 实现异步邮件发送
+后续考虑可将如下功能加入到该基础镜像中：
+- Redis Session; 
+- Redis ormcache;
+- Minio filestore;
+- Celery email send.
