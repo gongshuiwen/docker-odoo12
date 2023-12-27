@@ -74,7 +74,7 @@ services:
 #      - "5432:5432"
     volumes:
       - ${BASE_DIR-.}/data_db:/var/lib/postgresql/data
-  mq:
+  rabbitmq:
     image: rabbitmq:3-management
     restart: always
     hostname: rabbitmq

@@ -24,7 +24,7 @@ check_config "db_port" "$PORT"
 check_config "db_user" "$USER"
 check_config "db_password" "$PASSWORD"
 
-: "${RABBIT_HOST:='mq'}"
+: "${RABBIT_HOST:='rabbitmq'}"
 : "${RABBIT_PORT:='5672'}"
 : "${RABBIT_USER:='guest'}"
 : "${RABBIT_PASSWORD:='guest'}"
