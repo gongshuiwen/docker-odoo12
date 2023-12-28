@@ -15,7 +15,7 @@ services:
     restart: always
     depends_on:
       - db
-      - mq
+      - rabbitmq
       - redis
       - minio
 #    ports:
@@ -29,7 +29,7 @@ services:
     restart: always
     depends_on:
       - db
-      - mq
+      - rabbitmq
       - redis
       - minio
 #    ports:
@@ -43,7 +43,7 @@ services:
     restart: always
     depends_on:
       - db
-      - mq
+      - rabbitmq
       - redis
       - minio
     volumes:
@@ -55,7 +55,7 @@ services:
     restart: always
     depends_on:
       - db
-      - mq
+      - rabbitmq
       - redis
       - minio
     volumes:
